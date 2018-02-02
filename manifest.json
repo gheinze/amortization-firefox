@@ -1,0 +1,25 @@
+{
+
+    "manifest_version": 2,
+    "name": "A4 Amortization Calculator",
+    "version": "0.1",
+
+    "content_security_policy": "script-src 'self' 'unsafe-eval' https://*.jquery.com https://unpkg.com; object-src 'self'",
+
+    "description": "Generates an amortization schedule for loans.",
+    "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/beastify",
+    "icons": {
+        "48": "icons/a4.svg"
+    },
+
+    "background": {
+        "scripts": ["amCalculatorAddOn.js"]
+    },
+
+
+    "browser_action": {
+        "default_icon": "icons/a4.svg",
+        "default_title": "Amortization Calculator"
+    }
+
+}
