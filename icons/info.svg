@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+  <text x="8" y="16" stroke="blue">i</text>
+  <circle cx="10" cy="10" r="9" stroke="blue" stroke-width="2" fill="none"/>
+</svg>
