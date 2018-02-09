@@ -105,6 +105,27 @@ $(document).ready(function() {
 
                         updateAdjustmentDate: function(date) {
                                 this.adjustmentDate = date;
+                        },
+
+                        _extractAmAttrs: function() {
+                            var amAttrs = {
+                                    loanAmount: this.loanAmount,
+                                    interestRate: this.interestRate,
+                                    interestOnly: this.interestOnly,
+                                    amortizationPeriodMonths: this.amortizationPeriodMonths,
+                                    termInMonths: this.termInMonths,
+                                    compoundingPeriodsPerYear: this.compoundingPeriodsPerYear,
+                                    paymentFrequency: this.paymentFrequency,
+                                    startDate: this.startDate,
+                                    adjustmentDate: this.adjustmentDate
+                            };
+                            return amAttrs;
+                        },
+
+                        generateSchedule: function() {
+                            var amAttrs = this._extractAmAttrs();
+                            var payments = a4.getPayments(amAttrs);
+                            console.log(payments);
                         }
 
                 },
@@ -125,17 +146,8 @@ $(document).ready(function() {
 
 
                         regularPayment: function() {
-                                var amAttrs = {
-                                        loanAmount: this.loanAmount,
-                                        interestRate: this.interestRate,
-                                        interestOnly: this.interestOnly,
-                                        amortizationPeriodMonths: this.amortizationPeriodMonths,
-                                        termInMonths: this.termInMonths,
-                                        compoundingPeriodsPerYear: this.compoundingPeriodsPerYear,
-                                        paymentFrequency: this.paymentFrequency,
-                                        startDate: this.startDate,
-                                        adjustmentDate: this.adjustmentDate
-                                };
+
+                                var amAttrs = this._extractAmAttrs();
 
                                 var periodicPayment = a4.getPeriodicPayment(amAttrs);
 

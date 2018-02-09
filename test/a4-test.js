@@ -61,8 +61,8 @@ QUnit.test( "A4 amortizaton calculator: amortized regular payment (compounding s
         interestRate: 10
     };
 
-    let frequencies = [52, 26, 24, 12, 6, 4, 2, 1];
-    let expectedPayments = [21.90, 43.83, 47.49, 95.17, 191.11, 287.84, 582.79, 1194.71];
+    var frequencies = [52, 26, 24, 12, 6, 4, 2, 1];
+    var expectedPayments = [21.90, 43.83, 47.49, 95.17, 191.11, 287.84, 582.79, 1194.71];
 
     for (let i = 0; i < frequencies.length; i++) {
         amAttrs.paymentFrequency = frequencies[i];
@@ -88,13 +88,33 @@ QUnit.test( "A4 amortizaton calculator: amortized regular payment (amortization 
         interestRate: 10
     };
 
-    let compoundingPeriodsPerYear = [12, 2, 1];
-    let expectedPayments = [96.51, 95.17, 93.67];
+    var compoundingPeriodsPerYear = [12, 2, 1];
+    var expectedPayments = [96.51, 95.17, 93.67];
 
     for (let i = 0; i < compoundingPeriodsPerYear.length; i++) {
         amAttrs.compoundingPeriodsPerYear = compoundingPeriodsPerYear[i];
         var regularPayment = a4.getPeriodicPayment(amAttrs);
         assert.equal(regularPayment, expectedPayments[i], "Amortized payment with " + compoundingPeriodsPerYear[i] + " compounding periods.");
     }
+
+});
+
+
+QUnit.test( "A4 amortizaton calculator: per diem", function( assert ) {
+
+    var amAttrs = {
+        loanAmount: 10000,
+        interestRate: 10
+    };
+
+    var perDiem = a4.getPerDiem(amAttrs);
+    var expectedPerDiem = Math.ceil(amAttrs.loanAmount * amAttrs.interestRate / 100 / 365 * 100) / 100;
+
+    assert.equal(perDiem, expectedPerDiem, "Per Diem: interest only loan");
+
+    amAttrs.interestOnly = false;
+    perDiem = a4.getPerDiem(amAttrs);
+    assert.equal(perDiem, expectedPerDiem, "Per Diem: amortized loan");
+
 
 });
