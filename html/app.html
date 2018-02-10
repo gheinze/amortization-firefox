@@ -128,6 +128,19 @@
     </div>
     <!-- end calculator -->
 
+    <!-- scheule -->
+    <div>
+        <table border="1">
+            <tr v-for = "payment in payments">
+                <td>{{payment.paymentNumber}} </td>
+                <td>{{payment.date | formatDate}}</td>
+                <td>{{payment.interest | formatMoney}}</td>
+                <td>{{payment.principal | formatMoney}}</td>
+                <td>{{payment.balance | formatMoney}}</td>
+            </tr>
+        </table>
+    </div>
+
 </div>
 
 </body>

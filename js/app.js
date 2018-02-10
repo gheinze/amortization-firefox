@@ -23,6 +23,27 @@ $(document).ready(function() {
 
         var today = new Date();
 
+        var _compoundingPeriodOptions = function() {
+            var options = [];
+            var timePeriods = a4.timePeriod();
+            for (let i = 0; i < timePeriods.length; i++) {
+                if (timePeriods[i].compoundingPeriod) {
+                    options.push({text: timePeriods[i].text, value: timePeriods[i].periodsPerYear});
+                }
+            }
+            return options;
+        };
+
+        var _paymentFrequencyOptions = function() {
+            var options = [];
+            var timePeriods = a4.timePeriod();
+            for (let i = 0; i < timePeriods.length; i++) {
+                options.push({text: timePeriods[i].text, value: timePeriods[i].periodsPerYear});
+            }
+            return options;
+        };
+
+
 
         var data = function() {
 
@@ -37,55 +58,9 @@ $(document).ready(function() {
                         adjustmentDate: _calculateAdjustmentDate(today),
                         termInMonths: 12,
                         preferredPayment: 0,
-
-                        compoundingPeriodOptions: [{
-                                        text: 'monthly',
-                                        value: '12'
-                                },
-                                {
-                                        text: 'semi-annually',
-                                        value: '2'
-                                },
-                                {
-                                        text: 'annually',
-                                        value: '1'
-                                }
-                        ],
-
-                        paymentFrequencyOptions: [{
-                                        text: 'weekly',
-                                        value: '52'
-                                },
-                                {
-                                        text: 'bi-weekly',
-                                        value: '26'
-                                },
-                                {
-                                        text: 'semi-monthly',
-                                        value: '24'
-                                },
-                                {
-                                        text: 'monthly',
-                                        value: '12'
-                                },
-                                {
-                                        text: 'bi-monthly',
-                                        value: '6'
-                                },
-                                {
-                                        text: 'quarterly',
-                                        value: '4'
-                                },
-                                {
-                                        text: 'semi-annually',
-                                        value: '2'
-                                },
-                                {
-                                        text: 'annually',
-                                        value: '1'
-                                }
-                        ]
-
+                        compoundingPeriodOptions: _compoundingPeriodOptions(),
+                        paymentFrequencyOptions: _paymentFrequencyOptions(),
+                        payments: []
                 };
 
         };
@@ -124,8 +99,7 @@ $(document).ready(function() {
 
                         generateSchedule: function() {
                             var amAttrs = this._extractAmAttrs();
-                            var payments = a4.getPayments(amAttrs);
-                            console.log(payments);
+                            this.payments = a4.getPayments(amAttrs);
                         }
 
                 },
@@ -160,6 +134,19 @@ $(document).ready(function() {
                                                 .replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,")
                                                 ;
                         }
+
+                },
+
+
+                filters: {
+
+                    formatDate: function (dte) {
+                        return moment(dte).format("YYYY-MM-DD");
+                    },
+
+                    formatMoney: function (amt) {
+                        return amt.toFixed(2).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
+                    }
 
                 }
 

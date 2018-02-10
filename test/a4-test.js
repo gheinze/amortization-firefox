@@ -118,3 +118,43 @@ QUnit.test( "A4 amortizaton calculator: per diem", function( assert ) {
 
 
 });
+
+
+QUnit.test( "A4 amortizaton calculator: interest only payments", function( assert ) {
+
+    var amAttrs = {
+        loanAmount: 10000,
+        regularPayment: 0,
+        startDate: '2018-01-10',
+        adjustmentDate: '2018-01-15',
+        termInMonths: 12,
+        interestOnly: true,
+        paymentFrequency: 12,
+        interestRate: 10
+    };
+
+    var payments = a4.getPayments(amAttrs);
+
+
+    assert.equal(payments.length,13, "Payment count for monthly payments in a 1 year term");
+
+    assert.equal(payments[0].paymentNumber, 0, "Payment number for payment 0");
+    assert.equal(payments[0].interest, 13.7, "Interest payment for 5 days");
+    assert.equal(payments[0].principal, 0, "Principal for payment 0");
+    assert.equal(payments[0].balance, 10000, "Balance for payment 0");
+    assert.equal(payments[0].date, amAttrs.adjustmentDate, "Payment number for payment 0");
+
+
+    for (let paymentNumber = 1; paymentNumber < payments.length; paymentNumber++) {
+        assert.equal(payments[paymentNumber].paymentNumber, paymentNumber, "Payment number for payment " + paymentNumber);
+        assert.equal(payments[paymentNumber].interest, 83.34, "Interest payment for month " + paymentNumber);
+        assert.equal(payments[paymentNumber].principal, 0, "Principal for payment 0");
+        assert.equal(payments[paymentNumber].balance, 10000, "Balance for payment 0");
+
+        let paymentDate = moment(payments[paymentNumber].date).format("YYYYMMDD");
+        let expectedDate = moment(amAttrs.adjustmentDate).add(paymentNumber, 'months').format("YYYYMMDD");
+        assert.equal(paymentDate, expectedDate, "Date for payment " + paymentNumber);
+    }
+
+
+});
