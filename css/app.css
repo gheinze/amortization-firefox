@@ -3,6 +3,11 @@ label {
     font-style: italic;
 }
 
+th, td {
+    text-align: right;
+    padding-right: 15px;
+}
+
 .form-control {
     padding-top: 5px;
     padding-right: 10px;
@@ -12,12 +17,23 @@ label {
 
 .area {
     border: solid 1px #85b1de;
-    width: 180px;
     background-color: #DDDDDD;
 }
 
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr auto auto 1fr;
+    grid-template-areas: ". calculator schedule .";
+}
+
 .calculator {
+    grid-area: calculator;
+    justify-self: start;
     border: solid 1px #85b1de;
-    width: 180px;
     background-color: #01FF70;
+}
+
+.schedule {
+    grid-area: schedule;
 }

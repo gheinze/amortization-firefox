@@ -28,9 +28,9 @@
 
 <body>
 
-    <div id="app">
+    <div id="app" class="grid">
 
-<div class="calculator">
+      <div class="calculator">
 
         <div class="form-control">
             <div><label>Loan amount</label></div>
@@ -129,11 +129,12 @@
     <!-- end calculator -->
 
     <!-- scheule -->
-    <div>
-        <table border="1">
+    <div class="schedule">
+        <table>
+            <tr v-show="payments.length > 0"><th>Payment</th><th style="text-align:left">Date</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>
             <tr v-for = "payment in payments">
-                <td>{{payment.paymentNumber}} </td>
-                <td>{{payment.date | formatDate}}</td>
+                <td style="text-align:center">{{payment.paymentNumber}} </td>
+                <td style="text-align:left">{{payment.date | formatDate}}</td>
                 <td>{{payment.interest | formatMoney}}</td>
                 <td>{{payment.principal | formatMoney}}</td>
                 <td>{{payment.balance | formatMoney}}</td>

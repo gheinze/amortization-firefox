@@ -92,7 +92,8 @@ $(document).ready(function() {
                                     compoundingPeriodsPerYear: this.compoundingPeriodsPerYear,
                                     paymentFrequency: this.paymentFrequency,
                                     startDate: this.startDate,
-                                    adjustmentDate: this.adjustmentDate
+                                    adjustmentDate: this.adjustmentDate,
+                                    preferredPayment: this.preferredPayment
                             };
                             return amAttrs;
                         },
