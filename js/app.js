@@ -24,23 +24,29 @@ $(document).ready(function() {
         var today = new Date();
 
         var _compoundingPeriodOptions = function() {
-            var options = [];
-            var timePeriods = a4.timePeriod();
-            for (let i = 0; i < timePeriods.length; i++) {
-                if (timePeriods[i].compoundingPeriod) {
-                    options.push({text: timePeriods[i].text, value: timePeriods[i].periodsPerYear});
+                var options = [];
+                var timePeriods = a4.timePeriod();
+                for (let i = 0; i < timePeriods.length; i++) {
+                        if (timePeriods[i].compoundingPeriod) {
+                                options.push({
+                                        text: timePeriods[i].text,
+                                        value: timePeriods[i].periodsPerYear
+                                });
+                        }
                 }
-            }
-            return options;
+                return options;
         };
 
         var _paymentFrequencyOptions = function() {
-            var options = [];
-            var timePeriods = a4.timePeriod();
-            for (let i = 0; i < timePeriods.length; i++) {
-                options.push({text: timePeriods[i].text, value: timePeriods[i].periodsPerYear});
-            }
-            return options;
+                var options = [];
+                var timePeriods = a4.timePeriod();
+                for (let i = 0; i < timePeriods.length; i++) {
+                        options.push({
+                                text: timePeriods[i].text,
+                                value: timePeriods[i].periodsPerYear
+                        });
+                }
+                return options;
         };
 
 
@@ -83,24 +89,111 @@ $(document).ready(function() {
                         },
 
                         _extractAmAttrs: function() {
-                            var amAttrs = {
-                                    loanAmount: this.loanAmount,
-                                    interestRate: this.interestRate,
-                                    interestOnly: this.interestOnly,
-                                    amortizationPeriodMonths: this.amortizationPeriodMonths,
-                                    termInMonths: this.termInMonths,
-                                    compoundingPeriodsPerYear: this.compoundingPeriodsPerYear,
-                                    paymentFrequency: this.paymentFrequency,
-                                    startDate: this.startDate,
-                                    adjustmentDate: this.adjustmentDate,
-                                    preferredPayment: this.preferredPayment
-                            };
-                            return amAttrs;
+                                var amAttrs = {
+                                        loanAmount: this.loanAmount,
+                                        interestRate: this.interestRate,
+                                        interestOnly: this.interestOnly,
+                                        amortizationPeriodMonths: this.amortizationPeriodMonths,
+                                        termInMonths: this.termInMonths,
+                                        compoundingPeriodsPerYear: this.compoundingPeriodsPerYear,
+                                        paymentFrequency: this.paymentFrequency,
+                                        startDate: this.startDate,
+                                        adjustmentDate: this.adjustmentDate,
+                                        preferredPayment: this.preferredPayment
+                                };
+                                return amAttrs;
                         },
 
                         generateSchedule: function() {
-                            var amAttrs = this._extractAmAttrs();
-                            this.payments = a4.getPayments(amAttrs);
+                                var amAttrs = this._extractAmAttrs();
+                                this.payments = a4.getPayments(amAttrs);
+                        },
+
+                        generatePdfSchedule: function() {
+
+                                var amAttrs = this._extractAmAttrs();
+
+                                var headerInfo = [];
+                                headerInfo.push(['Loan amount:', this.$options.filters.formatMoney(amAttrs.loanAmount)]);
+                                headerInfo.push(['Interest rate:', amAttrs.interestRate + ' %']);
+                                headerInfo.push(['Start date:', this.$options.filters.formatDate(amAttrs.startDate)]);
+                                headerInfo.push(['Payments per year:', amAttrs.paymentFrequency]);
+                                headerInfo.push(['Regular payment:', this.$options.filters.formatMoney(amAttrs.preferredPayment)]);
+
+
+                                var schedule = a4.getPayments(amAttrs);
+                                this.payments = schedule;
+                                var paymentList = [];
+                                paymentList.push([{
+                                                text: 'Payment',
+                                                fillColor: '#CCCCCC'
+                                        },
+                                        {
+                                                text: 'Date',
+                                                fillColor: '#CCCCCC'
+                                        },
+                                        {
+                                                text: 'Interest',
+                                                alignment: 'right',
+                                                fillColor: '#CCCCCC'
+                                        },
+                                        {
+                                                text: 'Principal',
+                                                alignment: 'right',
+                                                fillColor: '#CCCCCC'
+                                        },
+                                        {
+                                                text: 'Balance',
+                                                alignment: 'right',
+                                                fillColor: '#CCCCCC'
+                                        }
+                                ]);
+                                for (let i = 0; i < schedule.length; i++) {
+                                        let payment = [];
+                                        payment.push(schedule[i].paymentNumber);
+                                        payment.push(this.$options.filters.formatDate(schedule[i].date));
+                                        payment.push({
+                                                text: this.$options.filters.formatMoney(schedule[i].interest),
+                                                alignment: 'right'
+                                        });
+                                        payment.push({
+                                                text: this.$options.filters.formatMoney(schedule[i].principal),
+                                                alignment: 'right'
+                                        });
+                                        payment.push({
+                                                text: this.$options.filters.formatMoney(schedule[i].balance),
+                                                alignment: 'right'
+                                        });
+                                        paymentList.push(payment);
+                                }
+
+
+                                var docDefinition = {
+                                        content: [{
+                                                        text: 'Amortization Schedule\n\n',
+                                                        fontSize: 15,
+                                                        bold: true
+                                                },
+                                                {
+                                                        table: {
+                                                                body: headerInfo
+                                                        }
+                                                },
+                                                {
+                                                        text: '\n\n'
+                                                },
+                                                {
+                                                        table: {
+                                                                headerRows: 1,
+                                                                body: paymentList
+                                                        }
+                                                }
+                                        ]
+                                };
+                                //                                                                 ['Payment', 'Date', 'Interest', 'Principal', 'Balance']
+
+                                pdfMake.createPdf(docDefinition).open(); //download('amortizationPdfExample.pdf');
+                                //this.payments = a4.getPayments(amAttrs);
                         }
 
                 },
@@ -127,13 +220,12 @@ $(document).ready(function() {
                                 var periodicPayment = a4.getPeriodicPayment(amAttrs);
 
                                 if (periodicPayment > this.preferredPayment) {
-                                    this.preferredPayment = periodicPayment;
+                                        this.preferredPayment = periodicPayment;
                                 }
 
                                 return "$ " + periodicPayment
-                                                .toFixed(2)
-                                                .replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,")
-                                                ;
+                                        .toFixed(2)
+                                        .replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
                         }
 
                 },
@@ -141,13 +233,13 @@ $(document).ready(function() {
 
                 filters: {
 
-                    formatDate: function (dte) {
-                        return moment(dte).format("YYYY-MM-DD");
-                    },
+                        formatDate: function(dte) {
+                                return moment(dte).format("YYYY-MM-DD");
+                        },
 
-                    formatMoney: function (amt) {
-                        return amt.toFixed(2).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
-                    }
+                        formatMoney: function(amt) {
+                                return amt.toFixed(2).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
+                        }
 
                 }
 
