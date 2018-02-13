@@ -124,7 +124,7 @@ QUnit.test( "A4 amortizaton calculator: interest only payments", function( asser
 
     var amAttrs = {
         loanAmount: 10000,
-        regularPayment: 0,
+        preferredPayment: 0,
         startDate: '2018-01-10',
         adjustmentDate: '2018-01-15',
         termInMonths: 12,
@@ -146,10 +146,11 @@ QUnit.test( "A4 amortizaton calculator: interest only payments", function( asser
 
 
     for (let paymentNumber = 1; paymentNumber < payments.length; paymentNumber++) {
+        console.log(payments[paymentNumber].principal + " " + typeof payments[paymentNumber].principal);
         assert.equal(payments[paymentNumber].paymentNumber, paymentNumber, "Payment number for payment " + paymentNumber);
         assert.equal(payments[paymentNumber].interest, 83.34, "Interest payment for month " + paymentNumber);
-        assert.equal(payments[paymentNumber].principal, 0, "Principal for payment 0");
-        assert.equal(payments[paymentNumber].balance, 10000, "Balance for payment 0");
+        assert.equal(payments[paymentNumber].principal, 0, "Principal for payment " + paymentNumber);
+        assert.equal(payments[paymentNumber].balance, 10000, "Balance for payment " + paymentNumber);
 
         let paymentDate = moment(payments[paymentNumber].date).format("YYYYMMDD");
         let expectedDate = moment(amAttrs.adjustmentDate).add(paymentNumber, 'months').format("YYYYMMDD");
