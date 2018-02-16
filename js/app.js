@@ -97,8 +97,8 @@ $(document).ready(function() {
                                         termInMonths: this.termInMonths,
                                         compoundingPeriodsPerYear: this.compoundingPeriodsPerYear,
                                         paymentFrequency: this.paymentFrequency,
-                                        startDate: this.startDate,
-                                        adjustmentDate: this.adjustmentDate,
+                                        startDate: this.startDate.setHours(0, 0, 0, 0),
+                                        adjustmentDate: this.adjustmentDate.setHours(0, 0, 0, 0),
                                         preferredPayment: this.preferredPayment
                                 };
                                 return amAttrs;
