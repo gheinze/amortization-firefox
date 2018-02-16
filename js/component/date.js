@@ -26,10 +26,6 @@
 
                             onSelect: function(date) {
                                     self.$emit('update-date', _convertDateStringToDate(date));
-                            },
-
-                            onClose: function(date) {
-                                    self.$emit('update-date', _convertDateStringToDate(date));
                             }
 
                     });

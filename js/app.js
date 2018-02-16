@@ -57,12 +57,14 @@ $(document).ready(function() {
                         loanAmount: 10000,
                         interestRate: 10,
                         interestOnly: true,
-                        amortizationPeriodMonths: 240,
+                        amYears: 20,
+                        amMonths: 0,
                         compoundingPeriodsPerYear: 2,
                         paymentFrequency: 12,
                         startDate: today,
                         adjustmentDate: _calculateAdjustmentDate(today),
-                        termInMonths: 12,
+                        termYears: 1,
+                        termMonths: 0,
                         preferredPayment: 0,
                         compoundingPeriodOptions: _compoundingPeriodOptions(),
                         paymentFrequencyOptions: _paymentFrequencyOptions(),
@@ -88,7 +90,23 @@ $(document).ready(function() {
                                 this.adjustmentDate = date;
                         },
 
-                        _extractAmAttrs: function() {
+                        updateTermYears: function(years) {
+                                this.termYears = years;
+                        },
+
+                        updateTermMonths: function(months) {
+                                this.termMonths = months;
+                        },
+
+                        updateAmYears: function(years) {
+                                this.amYears = years;
+                        },
+
+                        updateAmMonths: function(months) {
+                                this.amMonths = months;
+                        },
+
+                        _extractNonPreferredPaymentAtts: function() {
                                 var amAttrs = {
                                         loanAmount: this.loanAmount,
                                         interestRate: this.interestRate,
@@ -98,10 +116,15 @@ $(document).ready(function() {
                                         compoundingPeriodsPerYear: this.compoundingPeriodsPerYear,
                                         paymentFrequency: this.paymentFrequency,
                                         startDate: this.startDate.setHours(0, 0, 0, 0),
-                                        adjustmentDate: this.adjustmentDate.setHours(0, 0, 0, 0),
-                                        preferredPayment: this.preferredPayment
+                                        adjustmentDate: this.adjustmentDate.setHours(0, 0, 0, 0)
                                 };
                                 return amAttrs;
+                        },
+
+                        _extractAmAttrs: function() {
+                            var amAttrs = this._extractNonPreferredPaymentAtts();
+                            amAttrs.preferredPayment = this.preferredPayment;
+                            return amAttrs;
                         },
 
                         generateSchedule: function() {
@@ -213,15 +236,29 @@ $(document).ready(function() {
                         },
 
 
+                        amortized: {
+                                get: function() {
+                                        return !this.interestOnly;
+                                },
+                                set: function(newValue) {
+                                        this.interestOnly = !newValue;
+                                }
+                        },
+
+
+                        termInMonths: function() {
+                                return this.termYears * 12 + this.termMonths;
+                        },
+
+                        amortizationPeriodMonths: function() {
+                            return this.amYears * 12 + this.amMonths;
+                        },
+
                         regularPayment: function() {
 
-                                var amAttrs = this._extractAmAttrs();
-
+                                var amAttrs = this._extractNonPreferredPaymentAtts();
                                 var periodicPayment = a4.getPeriodicPayment(amAttrs);
-
-                                if (periodicPayment > this.preferredPayment) {
-                                        this.preferredPayment = periodicPayment;
-                                }
+                                this.preferredPayment = periodicPayment;
 
                                 return "$ " + periodicPayment
                                         .toFixed(2)

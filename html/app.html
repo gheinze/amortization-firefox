@@ -21,6 +21,7 @@
     <script src="../js/component/numeric.js"></script>
     <script src="../js/component/numericPair.js"></script>
     <script src="../js/component/date.js"></script>
+    <script src="../js/component/spinner.js"></script>
 
     <script src="../lib/a4.js"></script>
     <script src="../js/app.js"></script>
@@ -32,120 +33,139 @@
 
     <div id="app" class="grid">
 
-      <div class="calculator">
-
-        <div class="form-control">
-            <div><label>Loan amount</label></div>
-            <div>
-                <numeric-input v-model="loanAmount" scale="2" prefix="$" suffix=""></numeric-input>
-            </div>
-        </div>
-
-        <div class="form-control">
-            <div><label>Interest Rate</label></div>
-            <div>
-                <numeric-input v-model="interestRate" scale="3" prefix="" suffix="%"></numeric-input>
-            </div>
-        </div>
-
-        <div class="form-control">
-            <div><input type="checkbox" v-model="interestOnly" /><label>interest only</label></div>
-        </div>
-
-        <div v-show="!interestOnly" class="area">
+        <div class="calculator">
 
             <div class="form-control">
-                <div><label>Amortization period</label></div>
+                <div><label>Loan amount</label></div>
                 <div>
-                    <numeric-pair-input v-model.lazy="amortizationPeriodMonths">
-                        <numeric-pair-input/>
+                    <numeric-input v-model="loanAmount" scale="2" prefix="$" suffix=""></numeric-input>
                 </div>
             </div>
 
             <div class="form-control">
-                <div><label>Compounding period</label></div>
+                <div><label>Interest Rate</label></div>
                 <div>
-                    <select v-model="compoundingPeriodsPerYear">
+                    <numeric-input v-model="interestRate" scale="3" prefix="" suffix="%"></numeric-input>
+                </div>
+            </div>
+
+            <div class="form-control">
+                <div><input type="checkbox" v-model="amortized" /><label>Amortized</label></div>
+            </div>
+
+            <div v-show="amortized" class="area">
+
+                <div class="term-grid">
+                    <div class="form-control term-years">
+                        <div><label>years</label></div>
+                        <div>
+                            <spinner class="spinner" v_model="amYears" v-bind:val="amYears" min="0" max="30" @update-val="updateAmYears"></spinner>
+                        </div>
+                    </div>
+                    <div class="form-control term-months">
+                        <div><label>months</label></div>
+                        <div>
+                            <spinner class="spinner" v_model="amMonths" v-bind:val="amMonths" min="0" max="11" @update-val="updateAmMonths"></spinner>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <div><label>Compounding period</label></div>
+                    <div>
+                        <select v-model="compoundingPeriodsPerYear">
                     <option v-for="option in compoundingPeriodOptions" v-bind:value="option.value">
                         {{ option.text }}
                     </option>
                 </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="term-grid">
+                <div class="form-control term-years">
+                    <div><label>Term years</label></div>
+                    <div>
+                        <spinner class="spinner" v_model="termYears" v-bind:val="termYears" min="0" max="30" @update-val="updateTermYears"></spinner>
+                    </div>
+                </div>
+                <div class="form-control term-months">
+                    <div><label>months</label></div>
+                    <div>
+                        <spinner class="spinner" v_model="termMonths" v-bind:val="termMonths" min="0" max="11" @update-val="updateTermMonths"></spinner>
+                    </div>
                 </div>
             </div>
 
-        </div>
-
-
-        <div class="form-control">
-            <div><label>Term</label></div>
-            <div>
-                <numeric-pair-input v-model.lazy="termInMonths">
-                    <numeric-pair-input/>
+            <div class="form-control">
+                <div><label>Start date</label></div>
+                <div>
+                    <date-picker v-model="startDate" v-bind:component-date="startDate" date-format="yy-mm-dd" @update-date="updateStartDate" v-once></date-picker>
+                </div>
             </div>
-        </div>
 
-        <div class="form-control">
-            <div><label>Start date</label></div>
-            <div>
-                <date-picker v-model="startDate" v-bind:component-date="startDate" date-format="yy-mm-dd" @update-date="updateStartDate" v-once></date-picker>
+            <div class="form-control">
+                <div><label>Adjustment date</label></div>
+                <div>
+                    <date-picker v-model="uiDate" v-bind:component-date="uiDate" date-format="yy-mm-dd" @update-date="updateAdjustmentDate"></date-picker>
+                </div>
             </div>
-        </div>
 
-        <div class="form-control">
-            <div><label>Adjustment date</label></div>
-            <div>
-                <date-picker v-model="uiDate" v-bind:component-date="uiDate" date-format="yy-mm-dd" @update-date="updateAdjustmentDate"></date-picker>
-            </div>
-        </div>
-
-        <div class="form-control">
-            <div><label>Payment frequency</label></div>
-            <div>
-                <select v-model="paymentFrequency">
+            <div class="form-control">
+                <div><label>Payment frequency</label></div>
+                <div>
+                    <select v-model="paymentFrequency">
                 <option v-for="option in paymentFrequencyOptions" v-bind:value="option.value">
                     {{ option.text }}
                 </option>
             </select>
+                </div>
             </div>
-        </div>
 
-        <div class="form-control">
-            <div><label>Regular payment</label></div>
-            <div>
-                {{ regularPayment }}
+            <div class="form-control">
+                <div><label>Regular payment</label></div>
+                <div>
+                    {{ regularPayment }}
+                </div>
             </div>
-        </div>
 
-        <div class="form-control">
-            <div><label>Preferred payment</label></div>
-            <div>
-                <numeric-input v-model="preferredPayment" scale="2" prefix="$" suffix=""></numeric-input>
+            <div class="form-control">
+                <div><label>Preferred payment</label></div>
+                <div>
+                    <numeric-input v-model="preferredPayment" scale="2" prefix="$" suffix=""></numeric-input>
+                </div>
             </div>
-        </div>
 
-        <div class="form-control">
-            <button v-on:click="generateSchedule">schedule</button>
-            <button v-on:click="generatePdfSchedule">pdf</button>
+            <div class="form-control">
+                <button v-on:click="generateSchedule">schedule</button>
+                <button v-on:click="generatePdfSchedule">pdf</button>
+            </div>
+
+        </div>
+        <!-- end calculator -->
+
+        <!-- scheule -->
+        <div class="schedule">
+            <table>
+                <tr v-show="payments.length > 0">
+                    <th>Payment</th>
+                    <th style="text-align:left">Date</th>
+                    <th>Interest</th>
+                    <th>Principal</th>
+                    <th>Balance</th>
+                </tr>
+                <tr v-for="payment in payments">
+                    <td style="text-align:center">{{payment.paymentNumber}} </td>
+                    <td style="text-align:left">{{payment.date | formatDate}}</td>
+                    <td>{{payment.interest | formatMoney}}</td>
+                    <td>{{payment.principal | formatMoney}}</td>
+                    <td>{{payment.balance | formatMoney}}</td>
+                </tr>
+            </table>
         </div>
 
     </div>
-    <!-- end calculator -->
-
-    <!-- scheule -->
-    <div class="schedule">
-        <table>
-            <tr v-show="payments.length > 0"><th>Payment</th><th style="text-align:left">Date</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>
-            <tr v-for = "payment in payments">
-                <td style="text-align:center">{{payment.paymentNumber}} </td>
-                <td style="text-align:left">{{payment.date | formatDate}}</td>
-                <td>{{payment.interest | formatMoney}}</td>
-                <td>{{payment.principal | formatMoney}}</td>
-                <td>{{payment.balance | formatMoney}}</td>
-            </tr>
-        </table>
-    </div>
-
-</div>
 
 </body>
 
