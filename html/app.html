@@ -33,7 +33,7 @@
 
     <div id="app" class="grid">
 
-        <div class="calculator">
+        <div class="calculator blue-background">
 
             <div class="form-control">
                 <div><label>Loan amount</label></div>
@@ -50,7 +50,7 @@
             </div>
 
             <div class="form-control">
-                <div><input type="checkbox" v-model="amortized" /><label>Amortized</label></div>
+                <div><input type="checkbox" v-model="amortized"/><label v-bind:title="message.amortized">Amortized</label></div>
             </div>
 
             <div v-show="amortized" class="area">
@@ -85,7 +85,7 @@
 
             <div class="term-grid">
                 <div class="form-control term-years">
-                    <div><label>Term years</label></div>
+                    <div><label v-bind:title="message.term">Term years</label></div>
                     <div>
                         <spinner class="spinner" v_model="termYears" v-bind:val="termYears" min="0" max="30" @update-val="updateTermYears"></spinner>
                     </div>
@@ -99,14 +99,14 @@
             </div>
 
             <div class="form-control">
-                <div><label>Start date</label></div>
+                <div><label v-bind:title="message.startDate">Start date</label></div>
                 <div>
                     <date-picker v-model="startDate" v-bind:component-date="startDate" date-format="yy-mm-dd" @update-date="updateStartDate" v-once></date-picker>
                 </div>
             </div>
 
             <div class="form-control">
-                <div><label>Adjustment date</label></div>
+                <div><label v-bind:title="message.adjustmentDate">Adjustment date</label></div>
                 <div>
                     <date-picker v-model="uiDate" v-bind:component-date="uiDate" date-format="yy-mm-dd" @update-date="updateAdjustmentDate"></date-picker>
                 </div>
@@ -131,7 +131,7 @@
             </div>
 
             <div class="form-control">
-                <div><label>Preferred payment</label></div>
+                <div><label v-bind:title="message.preferredPayment">Preferred payment</label></div>
                 <div>
                     <numeric-input v-model="preferredPayment" scale="2" prefix="$" suffix=""></numeric-input>
                 </div>
@@ -146,7 +146,7 @@
         <!-- end calculator -->
 
         <!-- scheule -->
-        <div class="schedule">
+        <div class="schedule blue-background">
             <table>
                 <tr v-show="payments.length > 0">
                     <th>Payment</th>

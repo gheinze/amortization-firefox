@@ -68,7 +68,15 @@ $(document).ready(function() {
                         preferredPayment: 0,
                         compoundingPeriodOptions: _compoundingPeriodOptions(),
                         paymentFrequencyOptions: _paymentFrequencyOptions(),
-                        payments: []
+                        payments: [],
+
+                        message: {
+                                amortized: "Amortized payments will blend interest and principal amounts so that the full loan amount is paid back by the end of the amortization period.",
+                                startDate: "Interest charges commence from the date funds are forwarded.",
+                                adjustmentDate: "It may be desirable to start payments on a fixed date (such as the 1st of the month) rather than on the start date. In this case, an adjustment interest-only charge (Payment 0) covers the days between the start date and the adjustment date.",
+                                term: "Show scheduled payments only for the period of time selected.",
+                                preferredPayment: "Typically the same as the calculated regular payment. However, you can choose to pay more than the regular payment with the extra amount applied to the principal."
+                        }
                 };
 
         };
@@ -106,6 +114,10 @@ $(document).ready(function() {
                                 this.amMonths = months;
                         },
 
+                        removeSchedule: function() {
+                                this.payments = [];
+                        },
+
                         _extractNonPreferredPaymentAtts: function() {
                                 var amAttrs = {
                                         loanAmount: this.loanAmount,
@@ -122,9 +134,9 @@ $(document).ready(function() {
                         },
 
                         _extractAmAttrs: function() {
-                            var amAttrs = this._extractNonPreferredPaymentAtts();
-                            amAttrs.preferredPayment = this.preferredPayment;
-                            return amAttrs;
+                                var amAttrs = this._extractNonPreferredPaymentAtts();
+                                amAttrs.preferredPayment = this.preferredPayment;
+                                return amAttrs;
                         },
 
                         generateSchedule: function() {
@@ -149,31 +161,33 @@ $(document).ready(function() {
                                 var paymentList = [];
                                 paymentList.push([{
                                                 text: 'Payment',
-                                                fillColor: '#CCCCCC'
+                                                alignment: 'center',
+                                                style: 'header'
                                         },
                                         {
                                                 text: 'Date',
-                                                fillColor: '#CCCCCC'
+                                                alignment: 'center',
+                                                style: 'header'
                                         },
                                         {
                                                 text: 'Interest',
                                                 alignment: 'right',
-                                                fillColor: '#CCCCCC'
+                                                style: 'header'
                                         },
                                         {
                                                 text: 'Principal',
                                                 alignment: 'right',
-                                                fillColor: '#CCCCCC'
+                                                style: 'header'
                                         },
                                         {
                                                 text: 'Balance',
                                                 alignment: 'right',
-                                                fillColor: '#CCCCCC'
+                                                style: 'header'
                                         }
                                 ]);
                                 for (let i = 0; i < schedule.length; i++) {
                                         let payment = [];
-                                        payment.push(schedule[i].paymentNumber);
+                                        payment.push({ text: schedule[i].paymentNumber, alignment: 'center' });
                                         payment.push(this.$options.filters.formatDate(schedule[i].date));
                                         payment.push({
                                                 text: this.$options.filters.formatMoney(schedule[i].interest),
@@ -192,6 +206,7 @@ $(document).ready(function() {
 
 
                                 var docDefinition = {
+                                        footer: function(currentPage, pageCount) { return {text: currentPage.toString() + ' of ' + pageCount, alignment: 'center'}; },
                                         content: [{
                                                         text: 'Amortization Schedule\n\n',
                                                         fontSize: 15,
@@ -209,9 +224,20 @@ $(document).ready(function() {
                                                         table: {
                                                                 headerRows: 1,
                                                                 body: paymentList
-                                                        }
+                                                        },
+                                                        layout: 'noBorders'
                                                 }
-                                        ]
+                                        ],
+                                        styles: {
+                                                header: {
+                                                        fontSize: 10,
+                                                        bold: true,
+                                                        margin: [0, 0, 0, 10]
+                                                }
+                                        },
+                                        defaultStyle: {
+                                            fontSize: 10
+                                        }
                                 };
                                 //                                                                 ['Payment', 'Date', 'Interest', 'Principal', 'Balance']
 
@@ -251,7 +277,7 @@ $(document).ready(function() {
                         },
 
                         amortizationPeriodMonths: function() {
-                            return this.amYears * 12 + this.amMonths;
+                                return this.amYears * 12 + this.amMonths;
                         },
 
                         regularPayment: function() {
@@ -259,6 +285,7 @@ $(document).ready(function() {
                                 var amAttrs = this._extractNonPreferredPaymentAtts();
                                 var periodicPayment = a4.getPeriodicPayment(amAttrs);
                                 this.preferredPayment = periodicPayment;
+                                this.removeSchedule();
 
                                 return "$ " + periodicPayment
                                         .toFixed(2)
@@ -278,6 +305,12 @@ $(document).ready(function() {
                                 return amt.toFixed(2).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
                         }
 
+                },
+
+                watch: {
+                        preferredPayment: function() {
+                                this.removeSchedule();
+                        }
                 }
 
         });

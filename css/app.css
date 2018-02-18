@@ -11,6 +11,12 @@ label {
 th, td {
     text-align: right;
     padding-right: 15px;
+    font-size: 80%;
+}
+
+.blue-background {
+  background-image: url(../icons/blueBackground.svg);
+  background-size: cover;
 }
 
 .ui-widget {
@@ -37,25 +43,28 @@ th, td {
 
 .grid {
     display: grid;
-    grid-template-columns: 1fr 250px 400px auto 1fr;
+    grid-template-columns: 1fr 1fr 2fr 1fr;
     grid-template-areas: ". calculator schedule .";
+    grid-gap: 1em;
 }
 
 .calculator {
     grid-area: calculator;
-    justify-self: start;
+    justify-self: end;
+    align-self: start;
     border: solid 1px #85b1de;
-    background-color: #00b09b;;
 }
 
 .schedule {
     grid-area: schedule;
+    justify-self: start;
+    align-self: start;
 }
 
 .term-grid {
     display: grid;
-    grid-template: 50px 10px 50px;
-    grid-template-areas: "term-years . term-months";
+    grid-template: 1fr 1fr;
+    grid-template-areas: "term-years term-months";
 }
 
 .term-years {}

@@ -2,12 +2,13 @@
 
     "manifest_version": 2,
     "name": "A4 Amortization Calculator",
-    "version": "0.1",
+    "author": "Accounted4",
+    "version": "0.2",
 
-    "content_security_policy": "script-src 'self' 'unsafe-eval' https://*.jquery.com https://unpkg.com; object-src 'self'",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 
     "description": "Generates an amortization schedule for loans.",
-    "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/beastify",
+    "homepage_url": "https://github.com/gheinze/amortization-firefox",
     "icons": {
         "48": "icons/a4.svg"
     },
@@ -20,6 +21,12 @@
     "browser_action": {
         "default_icon": "icons/a4.svg",
         "default_title": "Amortization Calculator"
+    },
+
+    "applications": {
+      "gecko": {
+        "id": "{e5168306-3892-4b61-a82d-28e2e42e7620}"
+      }
     }
 
 }
