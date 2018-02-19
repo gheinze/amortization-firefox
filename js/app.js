@@ -1,6 +1,3 @@
-var app = {};
-
-
 $(document).ready(function() {
 
         "use strict";
@@ -49,6 +46,13 @@ $(document).ready(function() {
                 return options;
         };
 
+        var _formatDate = function(dte) {
+                return moment(dte).format("YYYY-MM-DD");
+        };
+
+        var _formatMoney = function(amt) {
+                return amt.toFixed(2).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
+        };
 
 
         var data = function() {
@@ -145,104 +149,9 @@ $(document).ready(function() {
                         },
 
                         generatePdfSchedule: function() {
-
                                 var amAttrs = this._extractAmAttrs();
-
-                                var headerInfo = [];
-                                headerInfo.push(['Loan amount:', this.$options.filters.formatMoney(amAttrs.loanAmount)]);
-                                headerInfo.push(['Interest rate:', amAttrs.interestRate + ' %']);
-                                headerInfo.push(['Start date:', this.$options.filters.formatDate(amAttrs.startDate)]);
-                                headerInfo.push(['Payments per year:', amAttrs.paymentFrequency]);
-                                headerInfo.push(['Regular payment:', this.$options.filters.formatMoney(amAttrs.preferredPayment)]);
-
-
-                                var schedule = a4.getPayments(amAttrs);
-                                this.payments = schedule;
-                                var paymentList = [];
-                                paymentList.push([{
-                                                text: 'Payment',
-                                                alignment: 'center',
-                                                style: 'header'
-                                        },
-                                        {
-                                                text: 'Date',
-                                                alignment: 'center',
-                                                style: 'header'
-                                        },
-                                        {
-                                                text: 'Interest',
-                                                alignment: 'right',
-                                                style: 'header'
-                                        },
-                                        {
-                                                text: 'Principal',
-                                                alignment: 'right',
-                                                style: 'header'
-                                        },
-                                        {
-                                                text: 'Balance',
-                                                alignment: 'right',
-                                                style: 'header'
-                                        }
-                                ]);
-                                for (let i = 0; i < schedule.length; i++) {
-                                        let payment = [];
-                                        payment.push({ text: schedule[i].paymentNumber, alignment: 'center' });
-                                        payment.push(this.$options.filters.formatDate(schedule[i].date));
-                                        payment.push({
-                                                text: this.$options.filters.formatMoney(schedule[i].interest),
-                                                alignment: 'right'
-                                        });
-                                        payment.push({
-                                                text: this.$options.filters.formatMoney(schedule[i].principal),
-                                                alignment: 'right'
-                                        });
-                                        payment.push({
-                                                text: this.$options.filters.formatMoney(schedule[i].balance),
-                                                alignment: 'right'
-                                        });
-                                        paymentList.push(payment);
-                                }
-
-
-                                var docDefinition = {
-                                        footer: function(currentPage, pageCount) { return {text: currentPage.toString() + ' of ' + pageCount, alignment: 'center'}; },
-                                        content: [{
-                                                        text: 'Amortization Schedule\n\n',
-                                                        fontSize: 15,
-                                                        bold: true
-                                                },
-                                                {
-                                                        table: {
-                                                                body: headerInfo
-                                                        }
-                                                },
-                                                {
-                                                        text: '\n\n'
-                                                },
-                                                {
-                                                        table: {
-                                                                headerRows: 1,
-                                                                body: paymentList
-                                                        },
-                                                        layout: 'noBorders'
-                                                }
-                                        ],
-                                        styles: {
-                                                header: {
-                                                        fontSize: 10,
-                                                        bold: true,
-                                                        margin: [0, 0, 0, 10]
-                                                }
-                                        },
-                                        defaultStyle: {
-                                            fontSize: 10
-                                        }
-                                };
-                                //                                                                 ['Payment', 'Date', 'Interest', 'Principal', 'Balance']
-
+                                var docDefinition = pdfScheduleDocDefFactory()(amAttrs, _formatDate, _formatMoney);
                                 pdfMake.createPdf(docDefinition).open(); //download('amortizationPdfExample.pdf');
-                                //this.payments = a4.getPayments(amAttrs);
                         }
 
                 },
@@ -297,13 +206,9 @@ $(document).ready(function() {
 
                 filters: {
 
-                        formatDate: function(dte) {
-                                return moment(dte).format("YYYY-MM-DD");
-                        },
+                        formatDate: _formatDate,
 
-                        formatMoney: function(amt) {
-                                return amt.toFixed(2).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
-                        }
+                        formatMoney: _formatMoney
 
                 },
 
