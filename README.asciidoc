@@ -7,3 +7,6 @@ https://github.com/gheinze/amortization-firefox/tree/master/web-ext-artifacts
 * Click on the gear drop-down top right, "Install Add-on from file"
 * Select the xpi file to load
 * the green A with a red slash on the Firefox addon bar (top right) will launch the calculator
+
+image::A4_Amortization_FirefoxPlugin.png[]
+
